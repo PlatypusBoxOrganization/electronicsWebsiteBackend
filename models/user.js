@@ -28,6 +28,14 @@ const userSchema = new mongoose.Schema(
       enum: ["USER", "ADMIN"],
       default: "USER",
     },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    resetPasswordCode: String,
+    resetPasswordExpiresAt: Date,
+    verificationCode: String,
+    verficationCodeExpiresAt: Date,
   },
   { timestamps: true }
 );

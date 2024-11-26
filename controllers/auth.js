@@ -1,3 +1,4 @@
+const { sendVerificationCode, WelcomeEmail } = require("../middleware/email");
 const User = require("../models/user");
 
 async function handleUserSignUp(req, res) {
@@ -10,7 +11,9 @@ async function handleUserSignUp(req, res) {
       return res.status(400).send("Email already in use.");
     }
     // Create user
-    const user = await User.create({ name, email, password });
+    const verificationCode = Math.floor(100000+Math.random()*90000).toString() ; 
+    const user = await User.create({ name, email, password ,verificationCode});
+   await sendVerificationCode(user.email,user.verificationCode) ; 
     res.status(201).send({ message: "User created successfully", user });
   } catch (error) {
     res
@@ -36,8 +39,39 @@ try {
   });
 }
 }
+async function handleUserVerification(req,res){
+ try {
+   console.log("Request Body:", req.body);
+   const { code } = req.body;
+   const user = await User.findOne({
+     verificationCode: code,
+     verificationCodeExpiresAt: { $gt: Date.now() },
+   });
+   console.log("User:", user); // Check if user is null
+   if (!user) {
+     return res
+       .status(400)
+       .json({ success: false, message: "Invalid or Expired Code" });
+   }
+   user.isVerified = true;
+   user.verificationCode = undefined;
+   user.verificationCodeExpiresAt = undefined;
+   await user.save();
+   console.log("User Updated:", user);
+   await WelcomeEmail(user.email, user.name);
+   return res
+     .status(200)
+     .json({ success: true, message: "Email Verified Successfully" });
+ } catch (error) {
+   console.error("Error occurred:", error);
+   return res
+     .status(500)
+     .json({ success: false, message: "Internal server error" });
+ }
+
+ 
+};
 
 
 
-
-module.exports = {handleUserLogin , handleUserSignUp }
+module.exports = {handleUserLogin , handleUserSignUp,handleUserVerification }
