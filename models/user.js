@@ -43,16 +43,20 @@ const userSchema = new mongoose.Schema(
 //hashing of password
 userSchema.pre("save", function (next) {
   const user = this;
+
+  // If the password field is not modified, continue without any changes
   if (!user.isModified("password")) {
-    return;
+    return next(); // Explicitly call next() to avoid hanging
   }
+
+  // Hash the password and save the salt
   const salt = randomBytes(16).toString();
   const hashedPassword = createHmac("sha256", salt)
     .update(user.password)
     .digest("hex");
 
-  this.salt = salt;
-  this.password = hashedPassword;
+  user.salt = salt;
+  user.password = hashedPassword;
   next();
 });
 //matching of password given by user with password which we already have in our db for that user

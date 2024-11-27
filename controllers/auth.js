@@ -45,7 +45,7 @@ async function handleUserVerification(req,res){
    const { code } = req.body;
    const user = await User.findOne({
      verificationCode: code,
-     verificationCodeExpiresAt: { $gt: Date.now() },
+   
    });
    console.log("User:", user); // Check if user is null
    if (!user) {
@@ -54,11 +54,14 @@ async function handleUserVerification(req,res){
        .json({ success: false, message: "Invalid or Expired Code" });
    }
    user.isVerified = true;
-   user.verificationCode = undefined;
-   user.verificationCodeExpiresAt = undefined;
-   await user.save();
+  //  user.verificationCode = undefined;
+ 
+ 
+console.log("Before Save:", user); // Log before save
+await user.save();
+console.log("After Save:", user);  
    console.log("User Updated:", user);
-   await WelcomeEmail(user.email, user.name);
+   await WelcomeEmail(user.name, user.email);
    return res
      .status(200)
      .json({ success: true, message: "Email Verified Successfully" });
@@ -68,9 +71,12 @@ async function handleUserVerification(req,res){
      .status(500)
      .json({ success: false, message: "Internal server error" });
  }
-
- 
 };
+
+
+
+
+
 
 
 
