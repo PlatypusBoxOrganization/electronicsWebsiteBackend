@@ -74,7 +74,7 @@ async function handleUserVerification(req,res){
    if (!user) {
      return res
        .status(400)
-       .json({ success: false, message: "Invalid or Expired Code" });
+       .json({ success: false, message: "invalid verification code" });
    }
    user.isVerified = true;
   //  user.verificationCode = undefined;
