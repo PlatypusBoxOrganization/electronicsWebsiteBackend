@@ -1,6 +1,10 @@
 const { sendVerificationCode, WelcomeEmail } = require("../middleware/email");
 const User = require("../models/user");
-
+const { transporter } = require("../middleware/emailConfig.js");
+ const {
+   Verification_Email_Template,
+ 
+ } = require("../middleware/EmailTemplate.js");
 async function handleUserSignUp(req, res) {
   try {
     const { name, email, password } = req.body;
@@ -21,6 +25,25 @@ async function handleUserSignUp(req, res) {
       .send({ error: "Error creating user", details: error.message });
   }
 }
+// async function sendVerificationCodeToUser(email, verificationCode) {
+//  try {
+//    const response = await transporter.sendMail({
+//      from: '"ElectronicsWeb" <sindhuku3@gmail.com>', // sender address
+//      to: email, // list of receivers
+//      subject: "Verify Your Email", // Subject line
+//      text: "Verify Your Email", // plain text body
+//      html: Verification_Email_Template.replace(
+//        "{verificationCode}",
+//        verificationCode
+//      ),
+//    }); // html body
+//    console.log("email sent successfully", response);
+//  } catch (error) {
+//   res
+//     .status(500)
+//     .send({ error: "failed to send email to user ", details: error.message });
+//  }
+// }
 
 // Login Handler
 async function handleUserLogin(req, res) {
