@@ -93,10 +93,9 @@ try {
 async function handleUserVerification(req,res){
  try {
    console.log("Request Body:", req.body);
-   const { code } = req.body;
+   const {verificationCode} = req.body;
    const user = await User.findOne({
-     verificationCode: code,
-   
+    verificationCode
    });
    console.log("User:", user); // Check if user is null
    if (!user) {
