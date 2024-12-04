@@ -8,7 +8,7 @@ const productSchema = new mongoose.Schema({
   },
   brand: {
     type: String,
-    required: true,
+ required:true ,
     trim: true,
   },
   rating: {
@@ -17,11 +17,12 @@ const productSchema = new mongoose.Schema({
   },
   numReviews: {
     type: Number,
+    required:true ,
     min: [0, "wrong min reviews"],
   },
   description: {
     type: String,
-    required: true,
+   
   },
   price: {
     type: Number,
