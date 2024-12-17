@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 8080;
 const path = require("path");
 const { db } = require("./db/db");
 const cookieParser = require("cookie-parser");
