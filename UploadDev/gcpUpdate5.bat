@@ -1,4 +1,4 @@
 @echo off
 
-gcloud config set project electronicswebsitedev
+gcloud config set project electronicswebsite
 pause
