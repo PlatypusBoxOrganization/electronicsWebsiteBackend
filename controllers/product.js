@@ -1,30 +1,7 @@
 const Product = require("../models/product");
 
-// Create a new product
-// exports.createProduct = async (req, res) => {
-//   try {
-//     const product = new Product(req.body);
-//     await product.save();
-//     res
-//       .status(201)
-//       .json({
-//         success: true,
-//         message: "Product created successfully",
-//         product,
-//       });
-//   } catch (error) {
-//     res
-//       .status(400)
-//       .json({
-//         success: false,
-//         message: "Error creating product",
-//         error: error.message,
-//       });
-//   }
-// };
 exports.createProduct = async (req, res) => {
   try {
-    // Check if images are uploaded
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({
         success: false,
@@ -32,14 +9,12 @@ exports.createProduct = async (req, res) => {
       });
     }
 
-    // Map uploaded files to the images field
     const images = req.files.map((file, index) => ({
       url: file.path,
       alt: req.body.alt || `Image ${index + 1}`,
       order: index + 1,
     }));
 
-    // Create a new product with the images
     const productData = { ...req.body, images };
     const product = new Product(productData);
 
@@ -51,14 +26,14 @@ exports.createProduct = async (req, res) => {
       product,
     });
   } catch (error) {
-    res.status(400).json({
+    console.error("Error creating product:", error); // Log the error
+    res.status(500).json({
       success: false,
       message: "Error creating product",
       error: error.message,
     });
   }
 };
-
 // Get all products
 exports.getAllProducts = async (req, res) => {
   try {
