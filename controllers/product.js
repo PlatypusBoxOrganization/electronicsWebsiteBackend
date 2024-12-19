@@ -2,6 +2,7 @@ const Product = require("../models/product");
 
 exports.createProduct = async (req, res) => {
   try {
+    // Validate images
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({
         success: false,
@@ -9,15 +10,46 @@ exports.createProduct = async (req, res) => {
       });
     }
 
+    // Map uploaded files to the images field
     const images = req.files.map((file, index) => ({
       url: file.path,
       alt: req.body.alt || `Image ${index + 1}`,
       order: index + 1,
     }));
 
-    const productData = { ...req.body, images };
-    const product = new Product(productData);
+    // Parse numeric fields to ensure correct data type
+    const {
+      price,
+      discountPercentage,
+      stock,
+      rating,
+      numReviews,
+      ...restBody
+    } = req.body;
 
+    const parsedData = {
+      ...restBody,
+      price: parseFloat(price),
+      discountPercentage: parseFloat(discountPercentage) || 0,
+      stock: parseInt(stock, 10),
+      rating: parseFloat(rating) || undefined,
+      numReviews: parseInt(numReviews, 10) || 0,
+      images,
+    };
+
+    // Validate required fields
+    const requiredFields = ["name", "brand", "price", "stock", "category"];
+    for (const field of requiredFields) {
+      if (!parsedData[field]) {
+        return res.status(400).json({
+          success: false,
+          message: `${field} is required`,
+        });
+      }
+    }
+
+    // Create and save the product
+    const product = new Product(parsedData);
     await product.save();
 
     res.status(201).json({
@@ -26,7 +58,6 @@ exports.createProduct = async (req, res) => {
       product,
     });
   } catch (error) {
-    console.error("Error creating product:", error); // Log the error
     res.status(500).json({
       success: false,
       message: "Error creating product",
