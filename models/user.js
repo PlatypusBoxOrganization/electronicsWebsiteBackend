@@ -41,43 +41,43 @@ const userSchema = new mongoose.Schema(
 );
 
 //hashing of password
-userSchema.pre("save", function (next) {
-  const user = this;
+// userSchema.pre("save", function (next) {
+//   const user = this;
 
-  // If the password field is not modified, continue without any changes
-  if (!user.isModified("password")) {
-    return next(); // Explicitly call next() to avoid hanging
-  }
+//   // If the password field is not modified, continue without any changes
+//   if (!user.isModified("password")) {
+//     return next(); // Explicitly call next() to avoid hanging
+//   }
 
-  // Hash the password and save the salt
-  const salt = randomBytes(16).toString();
-  const hashedPassword = createHmac("sha256", salt)
-    .update(user.password)
-    .digest("hex");
+//   // Hash the password and save the salt
+//   const salt = randomBytes(16).toString();
+//   const hashedPassword = createHmac("sha256", salt)
+//     .update(user.password)
+//     .digest("hex");
 
-  user.salt = salt;
-  user.password = hashedPassword;
-  next();
-});
+//   user.salt = salt;
+//   user.password = hashedPassword;
+//   next();
+// });
 //matching of password given by user with password which we already have in our db for that user
-userSchema.static(
-  "matchPasswordAndGenerateToken",
-  async function (email, password) {
-    const user = await this.findOne({ email });
-    if (!user) throw new Error("user not found");
-    const salt = user.salt;
-    const hashedpassword = user.password;
-    const userProvidedHash = createHmac("sha256", salt)
-      .update(password)
-      .digest("hex");
-    if (hashedpassword !== userProvidedHash) {
-      throw new Error("incorrect password");
-    }
-    const token = createTokenForUser(user);
-    console.log(token);
-    return token;
-  }
-);
+// userSchema.static(
+//   "matchPasswordAndGenerateToken",
+//   async function (email, password) {
+//     const user = await this.findOne({ email });
+//     if (!user) throw new Error("user not found");
+//     const salt = user.salt;
+//     const hashedpassword = user.password;
+//     const userProvidedHash = createHmac("sha256", salt)
+//       .update(password)
+//       .digest("hex");
+//     if (hashedpassword !== userProvidedHash) {
+//       throw new Error("incorrect password");
+//     }
+//     const token = createTokenForUser(user);
+//     console.log(token);
+//     return token;
+//   }
+// );
 const User = mongoose.model("user", userSchema);
 
 module.exports = User;
